@@ -1,17 +1,23 @@
 import Experience from "../Experience";
 import * as THREE from "three";
+import * as CANNON from "cannon-es";
+import { getMeshSize } from "../../common/utils";
 
 export default class MainCharacter {
   experience: Experience;
   resources: any;
+  charaGroup: THREE.Group;
   model: any;
+  racketModel: THREE.Group;
   animation: any;
   time: any;
   debug: any;
   debugFolder: any;
+  characterBody: any;
+  racketBody: any;
   constructor() {
     this.experience = new Experience();
-    this.resources = this.experience.resources.items.foxModel;
+    this.resources = this.experience.resources.items.mainCharacterModel;
     this.time = this.experience.time;
     this.debug = this.experience.debug;
 
@@ -20,27 +26,67 @@ export default class MainCharacter {
     }
 
     this.setModel();
+    this.setCharacterPhysicsModel();
+    //this.setRacketPhysicsModel();
     this.setAnimation();
   }
 
   setModel() {
+    this.charaGroup = new THREE.Group();
     this.model = this.resources.scene;
     this.model.scale.set(0.25, 0.25, 0.25);
-    this.experience.scene.add(this.model);
-
     this.model.traverse((child: any) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
       }
+
+      if (child.name === "ラケット") {
+        this.racketModel = child;
+      }
     });
+
+    // TODO ここでキャラクターの位置を調整
+    this.charaGroup.position.set(0, -0.7, 0);
+    this.charaGroup.add(this.model);
+    this.experience.scene.add(this.charaGroup);
+  }
+
+  setCharacterPhysicsModel() {
+    const modelSize = getMeshSize(this.model);
+
+    // キャラクター
+    const characterShape = new CANNON.Box(
+      new CANNON.Vec3(modelSize.x / 2, modelSize.y / 2, modelSize.z / 2)
+    );
+    this.characterBody = new CANNON.Body({
+      mass: 1,
+      position: new CANNON.Vec3(0, modelSize.y / 2, -3),
+      shape: characterShape,
+    });
+
+    // 回転を無効化
+    this.characterBody.angularFactor.set(0, 0, 0);
+    this.experience.world.world.addBody(this.characterBody);
+  }
+
+  setRacketPhysicsModel() {
+    const modelSize = getMeshSize(this.racketModel);
+    // ラケット
+    const racketShape = new CANNON.Box(
+      new CANNON.Vec3(modelSize.x / 2, modelSize.y / 2, modelSize.z / 2)
+    );
+    this.racketBody = new CANNON.Body({
+      mass: 0,
+      position: new CANNON.Vec3(0, 0, 0),
+      shape: racketShape,
+    });
+    this.experience.world.world.addBody(this.racketBody);
   }
 
   setAnimation() {
     this.animation = {};
     this.animation.mixer = new THREE.AnimationMixer(this.model);
-
     this.animation.action = {};
-    console.log(this.resources.animations);
 
     this.animation.action.hitLeft = this.animation.mixer.clipAction(
       this.resources.animations[0]
@@ -124,18 +170,18 @@ export default class MainCharacter {
   play(code: string) {
     switch (code) {
       case "ArrowLeft":
+        this.characterBody.velocity.set(-5, 0, 0);
         this.animation.play("runRight");
-
         break;
       case "ArrowRight":
+        this.characterBody.velocity.set(5, 0, 0);
         this.animation.play("runLeft");
-
         break;
       case "ArrowUp":
+        this.animation.play("hitRight");
         break;
       case "ArrowDown":
-        this.animation.play("hitRight");
-
+        this.animation.play("hitLeft");
         break;
       case "Space":
         this.animation.play("hitLeft");
@@ -152,5 +198,15 @@ export default class MainCharacter {
 
   update() {
     this.animation.mixer.update(this.time.delta * 0.001);
+    const { x, y, z } = this.characterBody.position;
+    this.model.position.copy(this.characterBody.position);
+
+    // アニメーション後のメッシュの位置を取得
+    if (this.racketModel) {
+      const racketWorldPosition = new THREE.Vector3();
+      const racketWorldQuaternion = new THREE.Quaternion();
+      this.racketModel.getWorldPosition(racketWorldPosition);
+      this.racketModel.getWorldQuaternion(racketWorldQuaternion);
+    }
   }
 }

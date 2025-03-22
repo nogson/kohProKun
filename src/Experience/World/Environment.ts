@@ -54,7 +54,7 @@ export default class Environment {
         .name("sunLightZ")
         .min(-5)
         .max(5)
-        .step(0.001)
+        .step(0.001);
     }
   }
 
@@ -65,6 +65,7 @@ export default class Environment {
     this.environmentMap.texture.colorSpace = THREE.SRGBColorSpace;
 
     this.experience.scene.environment = this.environmentMap.texture;
+    this.experience.scene.background = new THREE.Color(0x87ceeb); // 背景色をスカイブルーに設定
 
     this.environmentMap.updateMaterials = () => {
       this.experience.scene.traverse((child) => {
