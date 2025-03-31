@@ -2,6 +2,7 @@ import * as THREE from "three";
 import Experience from "../Experience";
 import * as CANNON from "cannon-es";
 import { normalMap } from "three/examples/jsm/nodes/Nodes.js";
+import { floorMaterial } from "./Material";
 
 export default class Floor {
   gerometry: THREE.CircleGeometry;
@@ -48,7 +49,7 @@ export default class Floor {
     this.material = new THREE.MeshStandardMaterial({
       map: this.textures.color,
       normalMap: this.textures.normal,
-      roughnessMap: this.textures.rough
+      roughnessMap: this.textures.rough,
     });
   }
   setMeshes() {
@@ -59,13 +60,16 @@ export default class Floor {
   }
   setPhysicsModel() {
     const floorShape = new CANNON.Plane();
-    const floorBody = new CANNON.Body();
-    floorBody.mass = 0;
+    const floorBody = new CANNON.Body({
+      mass: 0,
+      material: floorMaterial,
+    });
     floorBody.addShape(floorShape);
     floorBody.quaternion.setFromAxisAngle(
       new CANNON.Vec3(1, 0, 0),
       -Math.PI * 0.5
     );
+    floorBody.collisionFilterGroup = this.experience.world.group.other;
     this.experience.world.world.addBody(floorBody);
   }
 }

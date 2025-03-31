@@ -8,6 +8,11 @@ import Floor from "./Floor";
 import MainCharacter from "./MainCharacter";
 import CharacterController from "./CharacterController";
 import Court from "./Court";
+import BallController from "./BallController";
+import {
+  contactBallAndFloorMaterial,
+  contactBallAndRackeMaterial,
+} from "./Material";
 
 export default class World {
   experience: Experience;
@@ -18,7 +23,12 @@ export default class World {
   characterController: CharacterController;
   court: Court;
   mainCharacter: MainCharacter;
+  BallController: BallController;
   cannonDebugger: any;
+  group = {
+    character: 1,
+    other: 2,
+  };
   constructor() {
     this.experience = new Experience();
     this.resources = this.experience.resources;
@@ -30,6 +40,7 @@ export default class World {
       this.environment = new Environment();
       this.characterController = new CharacterController();
       this.court = new Court();
+      this.BallController = new BallController();
 
       this.initWorld();
     });
@@ -38,6 +49,7 @@ export default class World {
   update() {
     if (this.world) this.world.step(1 / 60);
     if (this.mainCharacter) this.mainCharacter.update();
+    if (this.BallController) this.BallController.update();
     if (this.cannonDebugger) this.cannonDebugger.update();
   }
 
@@ -48,10 +60,18 @@ export default class World {
     const solver = this.world.solver as CANNON.GSSolver;
     solver.iterations = 30;
     solver.tolerance = 0.01; // 許容誤差を設定
+    this.setPhysicsModel();
 
     // CannonDebuggerの設定
-    this.cannonDebugger = CannonDebugger(this.experience.scene, this.world, {
-      color: 0xff0000, // デバッグ用のボディの色
-    });
+    if (this.experience.debug.active) {
+      this.cannonDebugger = CannonDebugger(this.experience.scene, this.world, {
+        color: 0xff0000, // デバッグ用のボディの色
+      });
+    }
+  }
+
+  setPhysicsModel() {
+    this.experience.world.world.addContactMaterial(contactBallAndFloorMaterial);
+    this.experience.world.world.addContactMaterial(contactBallAndRackeMaterial);
   }
 }

@@ -2,6 +2,7 @@ import Experience from "../Experience";
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import { getMeshSize } from "../../common/utils";
+import { rackePhysicsMaterial } from "./Material";
 
 export default class MainCharacter {
   experience: Experience;
@@ -15,6 +16,9 @@ export default class MainCharacter {
   debugFolder: any;
   characterBody: any;
   racketBody: any;
+  private runSpeed = { x: 0, z: 0 }; // x軸とz軸の速度を管理
+  private acceleration = 0.1;
+  private deceleration = 0.85;
   constructor() {
     this.experience = new Experience();
     this.resources = this.experience.resources.items.mainCharacterModel;
@@ -27,7 +31,7 @@ export default class MainCharacter {
 
     this.setModel();
     this.setCharacterPhysicsModel();
-    //this.setRacketPhysicsModel();
+    this.setRacketPhysicsModel();
     this.setAnimation();
   }
 
@@ -40,7 +44,7 @@ export default class MainCharacter {
         child.castShadow = true;
       }
 
-      if (child.name === "ラケット") {
+      if (child.name === "ラケットヒット面") {
         this.racketModel = child;
       }
     });
@@ -59,10 +63,15 @@ export default class MainCharacter {
       new CANNON.Vec3(modelSize.x / 2, modelSize.y / 2, modelSize.z / 2)
     );
     this.characterBody = new CANNON.Body({
-      mass: 1,
-      position: new CANNON.Vec3(0, modelSize.y / 2, -3),
+      mass: 15,
+      position: new CANNON.Vec3(0, modelSize.y / 2, -5),
       shape: characterShape,
     });
+
+    // 衝突フィルタリング設定
+    this.characterBody.collisionFilterGroup =
+      this.experience.world.group.character;
+    this.characterBody.collisionFilterMask = this.experience.world.group.other;
 
     // 回転を無効化
     this.characterBody.angularFactor.set(0, 0, 0);
@@ -71,15 +80,21 @@ export default class MainCharacter {
 
   setRacketPhysicsModel() {
     const modelSize = getMeshSize(this.racketModel);
-    // ラケット
+    // ラケット 
     const racketShape = new CANNON.Box(
-      new CANNON.Vec3(modelSize.x / 2, modelSize.y / 2, modelSize.z / 2)
+      new CANNON.Vec3(modelSize.x, modelSize.y , 0.05  )
     );
     this.racketBody = new CANNON.Body({
-      mass: 0,
-      position: new CANNON.Vec3(0, 0, 0),
+      mass: 1,
       shape: racketShape,
+      material: rackePhysicsMaterial,
     });
+
+    // 衝突フィルタリング設定
+    this.racketBody.collisionFilterGroup =
+      this.experience.world.group.character;
+    this.racketBody.collisionFilterMask = this.experience.world.group.other;
+
     this.experience.world.world.addBody(this.racketBody);
   }
 
@@ -129,6 +144,9 @@ export default class MainCharacter {
     };
 
     this.animation.mixer.addEventListener("finished", (e) => {
+      // 再生速度を元に戻す
+      this.animation.mixer.timeScale = 1;
+
       // 次のアニメーションを再生
       if (this.animation.action.current === this.animation.action.hitRight) {
         this.animation.play("pause");
@@ -170,17 +188,24 @@ export default class MainCharacter {
   play(code: string) {
     switch (code) {
       case "ArrowLeft":
-        this.characterBody.velocity.set(-5, 0, 0);
+        //this.characterBody.velocity.x -= 1.5;
+        // this.characterBody.velocity.set(-5, 0, 0);
+        this.runSpeed.x -= this.acceleration;
         this.animation.play("runRight");
         break;
       case "ArrowRight":
-        this.characterBody.velocity.set(5, 0, 0);
+        // this.characterBody.velocity.x += 1.5;
+        // this.characterBody.velocity.set(5, 0, 0);
+        this.runSpeed.x += this.acceleration;
+
         this.animation.play("runLeft");
         break;
       case "ArrowUp":
+        this.animation.mixer.timeScale = 2;
         this.animation.play("hitRight");
         break;
       case "ArrowDown":
+        this.animation.mixer.timeScale = 2;
         this.animation.play("hitLeft");
         break;
       case "Space":
@@ -196,17 +221,49 @@ export default class MainCharacter {
     }
   }
 
+  updateRacketPosition() {
+    // ラケットの位置と回転を物理ボディに同期
+    if (this.racketModel && this.racketBody) {
+      // ラケットの位置と回転を物理ボディに同期
+      if (this.racketModel && this.racketBody) {
+        const racketWorldPosition = new THREE.Vector3();
+        const racketWorldQuaternion = new THREE.Quaternion();
+
+        this.racketModel.getWorldPosition(racketWorldPosition);
+        this.racketModel.getWorldQuaternion(racketWorldQuaternion);
+
+        this.racketBody.position.set(
+          racketWorldPosition.x,
+          racketWorldPosition.y,
+          racketWorldPosition.z
+        );
+
+        this.racketBody.quaternion.set(
+          racketWorldQuaternion.x,
+          racketWorldQuaternion.y,
+          racketWorldQuaternion.z,
+          racketWorldQuaternion.w
+        );
+      }
+    }
+  }
+
   update() {
     this.animation.mixer.update(this.time.delta * 0.001);
-    const { x, y, z } = this.characterBody.position;
+
+    // キャラクターの位置をrunSpeedに基づいて更新
+    this.characterBody.position.x += this.runSpeed.x;
+    //this.characterBody.position.z += this.runSpeed.z;
+
     this.model.position.copy(this.characterBody.position);
 
-    // アニメーション後のメッシュの位置を取得
-    if (this.racketModel) {
-      const racketWorldPosition = new THREE.Vector3();
-      const racketWorldQuaternion = new THREE.Quaternion();
-      this.racketModel.getWorldPosition(racketWorldPosition);
-      this.racketModel.getWorldQuaternion(racketWorldQuaternion);
-    }
+    // 減速処理
+    this.runSpeed.x *= this.deceleration;
+    this.runSpeed.z *= this.deceleration;
+    if (Math.abs(this.runSpeed.x) < 0.001) this.runSpeed.x = 0;
+    //if (Math.abs(this.runSpeed.z) < 0.001) this.runSpeed.z = 0;
+
+    // ラケットの位置と回転を物理ボディに同期
+    this.updateRacketPosition();
   }
 }
