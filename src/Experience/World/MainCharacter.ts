@@ -80,12 +80,12 @@ export default class MainCharacter {
 
   setRacketPhysicsModel() {
     const modelSize = getMeshSize(this.racketModel);
-    // ラケット 
+    // ラケット
     const racketShape = new CANNON.Box(
-      new CANNON.Vec3(modelSize.x, modelSize.y , 0.05  )
+      new CANNON.Vec3(modelSize.x * 1.5, modelSize.y * 1.5, 0.05)
     );
     this.racketBody = new CANNON.Body({
-      mass: 1,
+      mass: 0,
       shape: racketShape,
       material: rackePhysicsMaterial,
     });

@@ -10,8 +10,10 @@ import CharacterController from "./CharacterController";
 import Court from "./Court";
 import BallController from "./BallController";
 import {
+  defaultContactMaterial,
   contactBallAndFloorMaterial,
   contactBallAndRackeMaterial,
+  contactBallAndCourtMaterial,
 } from "./Material";
 
 export default class World {
@@ -42,6 +44,11 @@ export default class World {
       this.court = new Court();
       this.BallController = new BallController();
 
+      // 衝突イベントを監視
+      this.mainCharacter.racketBody.addEventListener("collide", (event) => {
+        this.handleCollision(event);
+      });
+
       this.initWorld();
     });
   }
@@ -70,8 +77,21 @@ export default class World {
     }
   }
 
+  handleCollision(event: any) {
+    const bodyA = event.body; // 衝突した1つ目のボディ
+    const bodyB = event.target; // 衝突した2つ目のボディ
+    if (event.body.name === "ball") {
+      console.log("Ball hit the racket!", event.body.velocity.z);
+      event.body.velocity.x = 0;
+      event.body.velocity.y = 5;
+      event.body.velocity.z = -3;
+    }
+  }
+
   setPhysicsModel() {
+    this.world.defaultContactMaterial = defaultContactMaterial;
     this.experience.world.world.addContactMaterial(contactBallAndFloorMaterial);
     this.experience.world.world.addContactMaterial(contactBallAndRackeMaterial);
+    this.experience.world.world.addContactMaterial(contactBallAndCourtMaterial);
   }
 }

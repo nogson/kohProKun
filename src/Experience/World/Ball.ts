@@ -9,7 +9,7 @@ export default class Ball {
   material: THREE.MeshStandardMaterial;
   mesh: THREE.Mesh;
   ballBody: CANNON.Body;
-  constructor() {
+  constructor(velocity: CANNON.Vec3) {
     this.experience = new Experience();
 
     this.setGeometries();
@@ -17,7 +17,7 @@ export default class Ball {
     this.setMeshes();
     this.setPhysicsModel();
 
-    this.ballBody.velocity.z = -5;
+    this.ballBody.velocity = velocity;
   }
 
   setGeometries() {
@@ -44,9 +44,11 @@ export default class Ball {
     this.ballBody = new CANNON.Body({
       mass: 1,
       shape: ballShape,
-      position: new CANNON.Vec3(0, 3, 2),
+      position: new CANNON.Vec3(0, 2, 2),
       material: ballMaterial,
     });
+
+    this.ballBody.name = "ball";
     this.ballBody.addShape(ballShape);
 
     this.ballBody.collisionFilterGroup = this.experience.world.group.other;
