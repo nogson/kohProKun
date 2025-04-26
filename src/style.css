@@ -56,7 +56,7 @@ body {
   display: inline-block;
   width: 20px;
   height: 20px;
-  background: url(./images/ball.png) no-repeat center / contain;
+  background: url(/images/ball.png) no-repeat center / contain;
   margin-right: 5px;
   margin-bottom: -4px;
 }

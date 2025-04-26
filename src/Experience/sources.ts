@@ -26,11 +26,11 @@ export default [
     type: "texture",
     path: "/textures/court/StuccoRoughCast001_ROUGHNESS_2K_METALNESS.png",
   },
-  {
-    name: "hdrMap",
-    type: "hdr",
-    path: "/hdr/Netball Court 2k.hdr",
-  },
+  // {
+  //   name: "hdrMap",
+  //   type: "hdr",
+  //   path: "/hdr/Netball Court 2k.hdr",
+  // },
   {
     name: "mainCharacterModel",
     type: "gltfModel",
