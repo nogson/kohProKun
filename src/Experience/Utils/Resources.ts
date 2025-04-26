@@ -50,7 +50,7 @@ export default class Resources extends EventEmitter {
           this.sorceLoaded(source, file);
         });
       } else if (source.type === "draco") {
-        this.loaders.dracoLoader.setDecoderPath("/draco/");
+        this.loaders.dracoLoader.setDecoderPath("/kohProKun/draco/");
         this.loaders.gltfLoader.setDRACOLoader(this.loaders.dracoLoader);
         this.loaders.gltfLoader.load(source.path, (file) => {
           this.sorceLoaded(source, file);

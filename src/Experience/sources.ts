@@ -3,28 +3,28 @@ export default [
     name: "environmentMapTexture",
     type: "cubeTexture",
     path: [
-      "/textures/environmentMap/px.jpg",
-      "/textures/environmentMap/nx.jpg",
-      "/textures/environmentMap/py.jpg",
-      "/textures/environmentMap/ny.jpg",
-      "/textures/environmentMap/pz.jpg",
-      "/textures/environmentMap/nz.jpg",
+      "/kohProKun/textures/environmentMap/px.jpg",
+      "/kohProKun/textures/environmentMap/nx.jpg",
+      "/kohProKun/textures/environmentMap/py.jpg",
+      "/kohProKun/textures/environmentMap/ny.jpg",
+      "/kohProKun/textures/environmentMap/pz.jpg",
+      "/kohProKun/textures/environmentMap/nz.jpg",
     ],
   },
   {
     name: "courtColorTexture",
     type: "texture",
-    path: "/textures/court/StuccoRoughCast001_COL_2K_METALNESS.png",
+    path: "/kohProKun/textures/court/StuccoRoughCast001_COL_2K_METALNESS.png",
   },
   {
     name: "grassNormalTexture",
     type: "texture",
-    path: "/textures/court/StuccoRoughCast001_NRM_2K_METALNESS.png",
+    path: "/kohProKun/textures/court/StuccoRoughCast001_NRM_2K_METALNESS.png",
   },
   {
     name: "grassRoughnessTexture",
     type: "texture",
-    path: "/textures/court/StuccoRoughCast001_ROUGHNESS_2K_METALNESS.png",
+    path: "/kohProKun/textures/court/StuccoRoughCast001_ROUGHNESS_2K_METALNESS.png",
   },
   // {
   //   name: "hdrMap",
@@ -34,21 +34,21 @@ export default [
   {
     name: "mainCharacterModel",
     type: "gltfModel",
-    path: "/models/koh/mainCharacter.glb",
+    path: "/kohProKun/models/koh/mainCharacter.glb",
   },
   {
     name: "courtModel",
     type: "gltfModel",
-    path: "/models/koh/court.glb",
+    path: "/kohProKun/models/koh/court.glb",
   },
   {
     name: "standSideModel",
     type: "draco",
-    path: "/models/koh/standSide.glb",
+    path: "/kohProKun/models/koh/standSide.glb",
   },
   {
     name: "standFrontBackModel",
     type: "draco",
-    path: "/models/koh/standFrontBack.glb",
+    path: "/kohProKun/models/koh/standFrontBack.glb",
   },
 ];
