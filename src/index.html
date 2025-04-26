@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code structuring</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./reset.css" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="game">
+      <div class="gameStatus">
+        <div class="gameStatusScoreWrap">
+          <span>SCORE</span><span id="gameStatusScore">0</span>
+        </div>
+      </div>
+      <canvas class="webgl"></canvas>
+    </div>
+    <div id="opening">
+      <div class="loading">loading</div>
+    </div>
+    <div id="startScreen">
+      <img src="/images/title.png" alt="title" class="logo" />
+      <div class="startButton">
+        <button id="startButton">START</button>
+      </div>
+    </div>
+    <script type="module" src="./script.ts"></script>
+  </body>
+</html>
