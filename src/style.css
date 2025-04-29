@@ -1,3 +1,5 @@
+@import "material-icons/iconfont/material-icons.css";
+
 * {
   margin: 0;
   padding: 0;
@@ -203,9 +205,12 @@ body {
   gap: 10px;
   width: 100%;
   button {
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background: rgba(0, 0, 0, 0.5);
-    padding: 20px 20px;
+    padding: 0 20px;
+    height: 60px;
     text-align: center;
     border-radius: 8px;
     color: #fff;
@@ -216,6 +221,7 @@ body {
     &:nth-child(1),
     &:nth-child(3) {
       width: 10%;
+      font-size: 30px;
     }
 
     &:nth-child(2) {
