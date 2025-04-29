@@ -15,6 +15,11 @@ export default class MainCharacterController {
       event.preventDefault(); // コンテキストメニューの表示をキャンセル
     });
 
+    // keydownイベントを監視
+    window.addEventListener("keydown", (event) => {
+      this.experience.world.mainCharacter.play(event.code);
+    });
+
     // keyupイベントを監視
     window.addEventListener("keyup", (event) => {
       const currentAction =
@@ -26,14 +31,11 @@ export default class MainCharacterController {
       this.isPressing = true;
       const targetElm = event.target as HTMLElement;
       const code = targetElm.getAttribute("name");
-      console.log("touchstart", code);
-      //this.experience.world.mainCharacter.play(code);
       this.animationType = code;
       this.animation = setInterval(() => this.handlePress(), 200);
     });
 
     window.addEventListener("touchend", (event) => {
-      console.log("touchend");
       this.isPressing = false;
       this.animationType = null;
       const currentAction =
