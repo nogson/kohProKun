@@ -194,8 +194,12 @@ body {
   display: none;
 }
 
-.mobailController {
+.mobile .mobailController {
   display: inline-flex;
+}
+
+.mobailController {
+  display: none;
   gap: 10px;
   width: 100%;
   button {

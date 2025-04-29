@@ -11,9 +11,8 @@ export default class MainCharacterController {
   constructor() {
     this.experience = new Experience();
 
-    // keydownイベントを監視
-    window.addEventListener("keydown", (event) => {
-      this.experience.world.mainCharacter.play(event.code);
+    document.addEventListener("contextmenu", function (event) {
+      event.preventDefault(); // コンテキストメニューの表示をキャンセル
     });
 
     // keyupイベントを監視
