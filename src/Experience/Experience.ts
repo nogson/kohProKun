@@ -56,6 +56,7 @@ export default class Experience {
     this.camera.on("onIntroAnimationComplete", () => {
       const startScreen = window.document.getElementById("startScreen");
       const startButton = window.document.getElementById("startButton");
+
       if (startScreen) {
         startScreen.classList.add("show");
       }
@@ -63,6 +64,7 @@ export default class Experience {
       if (startButton) {
         startButton.classList.add("show");
         startButton.addEventListener("click", () => {
+          document.body.classList.add("gameStart");
           if (startScreen) {
             startScreen.classList.remove("show");
           }

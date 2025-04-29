@@ -20,7 +20,7 @@ export default class BallController {
   autoCreate() {
     setTimeout(() => {
       this.create();
-    }, 1000);
+    }, 2000);
     setInterval(() => this.create(), 5000); // `this.create`を明示的にバインド
   }
 
