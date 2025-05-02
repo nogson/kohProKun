@@ -5,4 +5,5 @@ const body = document.querySelector("body");
 
 if (isMobile()) {
   body?.classList.add("mobile");
+  alert("スマホでは正しく動作しない場合があります")
 }
